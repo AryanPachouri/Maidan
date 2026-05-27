@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Demo Student SOP — Maidan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #efe9dc;
+    --bg-2: #e7e0d0;
+    --paper: #f6f1e4;
+    --ink: #0e1611;
+    --ink-2: #2a342c;
+    --muted: #6b6a5e;
+    --rule: #cdc4af;
+    --rule-2: #b9af96;
+    --pitch: #163a25;
+    --pitch-2: #0b2415;
+    --chalk: #f6f1e4;
+    --accent: #d24b1f;
+    --done: #1f6b3d;
+    --doing: #b97a14;
+    --todo: #8a8472;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Geist", "Inter Tight", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1200px 600px at 90% -10%, #f6f1e4 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #e3dbc6 0%, transparent 60%),
+      var(--bg);
+    min-height: 100vh;
+  }
+  .serif { font-family: "Instrument Serif", "Newsreader", Georgia, serif; font-weight: 400; }
+  .mono { font-family: "Geist Mono", ui-monospace, monospace; }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 56px 48px 96px; }
+
+  /* ============ HEADER ============ */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 24px; border-bottom: 1px solid var(--rule);
+    margin-bottom: 40px;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); }
+  .brand-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--pitch);
+    position: relative;
+    box-shadow: inset 0 0 0 2px var(--chalk);
+  }
+  .brand-dot::after{
+    content:""; position:absolute; inset: 5px; border-radius:50%;
+    background:
+      conic-gradient(from 45deg, var(--ink) 0 25%, var(--chalk) 0 50%, var(--ink) 0 75%, var(--chalk) 0 100%);
+    opacity:.85;
+  }
+  .topbar .meta { display:flex; gap: 28px; }
+  .topbar .meta span b { color: var(--ink); font-weight: 500; }
+
+  .hero { display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end; margin-bottom: 56px; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::before {
+    content: ""; width: 28px; height: 1px; background: var(--ink);
+  }
+  h1.hero-title {
+    font-family: "Instrument Serif", serif;
+    font-weight: 400;
+    font-size: clamp(56px, 7.2vw, 96px);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+  }
+  h1.hero-title em { font-style: italic; color: var(--pitch); }
+  .hero-sub {
+    font-size: 17px; line-height: 1.5; color: var(--ink-2);
+    max-width: 56ch;
+    text-wrap: pretty;
+  }
+  .hero-side {
+    padding-bottom: 6px;
+  }
+  .hero-side .label {
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .hero-side p {
+    margin: 0 0 18px;
+    font-size: 14px; color: var(--ink-2); line-height: 1.55;
+  }
+
+  /* ============ PROGRESS DASHBOARD ============ */
+  .dash {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+    gap: 28px;
+    align-items: center;
+    margin-bottom: 64px;
+  }
+  .dash .progress-block { }
+  .dash .pct {
+    font-family: "Instrument Serif", serif;
+    font-size: 64px; line-height: 1; letter-spacing: -0.02em;
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .dash .pct small { font-size: 18px; color: var(--muted); font-family: "Geist Mono", monospace; }
+  .dash .bar {
+    margin-top: 12px; height: 6px; background: var(--bg-2); border-radius: 999px; overflow: hidden;
+    position: relative;
+  }
+  .dash .bar > i {
+    display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--pitch), #2d6f43);
+    transition: width 0.5s cubic-bezier(.2,.7,.2,1);
+    border-radius: 999px;
+  }
+  .dash .progress-label {
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .stat {
+    border-left: 1px solid var(--rule);
+    padding-left: 22px;
+  }
+  .stat .num {
+    font-family: "Instrument Serif", serif;
+    font-size: 34px; line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .stat .num.done { color: var(--done); }
+  .stat .num.doing { color: var(--doing); }
+  .stat .num.todo { color: var(--ink-2); }
+  .stat .lbl {
+    margin-top: 8px; font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .stat .sub { margin-top: 4px; font-size: 12px; color: var(--muted); }
+
+  .reset-btn {
+    grid-column: 5; justify-self: end; align-self: start;
+    background: transparent; border: 1px solid var(--rule); color: var(--muted);
+    font: inherit; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 8px 12px; cursor: pointer; border-radius: 2px;
+  }
+  .reset-btn:hover { color: var(--ink); border-color: var(--ink); }
+
+  /* ============ FLOW SECTION HEADER ============ */
+  .section-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-head h2 {
+    font-family: "Instrument Serif", serif;
+    font-size: 40px; font-weight: 400; line-height: 1; letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .section-head h2 em { font-style: italic; color: var(--pitch); }
+  .legend { display: flex; gap: 18px; font-size: 12px; color: var(--muted); }
+  .legend .key { display: flex; align-items: center; gap: 7px; }
+  .legend .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .legend .dot.todo { background: transparent; border: 1.5px solid var(--rule-2); }
+  .legend .dot.doing { background: var(--doing); }
+  .legend .dot.done { background: var(--done); }
+
+  /* ============ FLOW STAGES ============ */
+  .flow {
+    position: relative;
+    padding-left: 88px;
+  }
+  /* the vertical line */
+  .flow::before{
+    content:""; position:absolute;
+    left: 30px; top: 8px; bottom: 8px;
+    width: 1px; background: var(--rule);
+  }
+
+  .stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 36px;
+    padding: 28px 0;
+    border-bottom: 1px dashed var(--rule);
+    transition: opacity 0.3s ease;
+  }
+  .stage:last-child { border-bottom: none; }
+
+  /* number circle on the line */
+  .stage .num-bubble {
+    position: absolute;
+    left: -73px; top: 28px;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Instrument Serif", serif;
+    font-size: 26px;
+    color: var(--ink);
+    transition: all 0.25s ease;
+    z-index: 2;
+  }
+  /* small arrow under each bubble except last */
+  .stage:not(:last-child) .num-bubble::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 100%;
+    transform: translateX(-50%) translateY(2px);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--rule);
+  }
+
+  .stage[data-status="done"] { }
+  .stage[data-status="done"] .num-bubble {
+    background: var(--pitch);
+    border-color: var(--pitch);
+    color: var(--chalk);
+  }
+  .stage[data-status="done"] .num-bubble::before {
+    content: "✓";
+    position: absolute;
+    right: -2px; top: -6px;
+    width: 22px; height: 22px;
+    background: var(--done);
+    color: var(--chalk);
+    border: 2px solid var(--paper);
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Geist", sans-serif;
+    font-weight: 600;
+  }
+  .stage[data-status="doing"] .num-bubble {
+    background: var(--paper);
+    border-color: var(--doing);
+    color: var(--doing);
+    box-shadow: 0 0 0 4px rgba(185, 122, 20, 0.12);
+  }
+
+  .stage .body { padding-top: 4px; }
+  .stage .meta-row {
+    display: flex; align-items: center; gap: 12px;
+    font-family: "Geist Mono", monospace;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+  }
+  .stage .meta-row .phase { color: var(--ink); }
+  .stage .meta-row .sep { color: var(--rule-2); }
+
+  .stage h3 {
+    font-family: "Instrument Serif", serif;
+    font-size: 38px; font-weight: 400; line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+  }
+  .stage[data-status="done"] h3 { color: var(--ink-2); }
+
+  .stage .desc {
+    color: var(--ink-2); font-size: 14.5px; line-height: 1.55;
+    margin: 0 0 18px;
+    max-width: 58ch;
+    text-wrap: pretty;
+  }
+
+  .acts {
+    list-style: none; padding: 0; margin: 0 0 4px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px;
+  }
+  .acts li {
+    font-size: 14px; color: var(--ink);
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 4px 0;
+  }
+  .acts li::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 6px; height: 6px;
+    margin-top: 8px;
+    background: var(--ink);
+    border-radius: 50%;
+  }
+  .stage[data-status="done"] .acts li { color: var(--muted); }
+  .stage[data-status="done"] .acts li::before { background: var(--rule-2); }
+
+  /* right column */
+  .stage .side {
+    border-left: 1px solid var(--rule);
+    padding: 4px 0 4px 28px;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  .output-box .label,
+  .status-box .label {
+    font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .output-box .val {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-size: 22px; line-height: 1.15;
+    color: var(--pitch);
+    letter-spacing: -0.005em;
+  }
+  .output-box .val::before { content: "→ "; font-style: normal; color: var(--rule-2); }
+
+  /* status switcher */
+  .status-switch {
+    display: inline-flex;
+    background: var(--bg-2);
+    padding: 3px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    width: fit-content;
+    gap: 0;
+  }
+  .status-switch button {
+    background: transparent; border: 0;
+    font: inherit;
+    font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s ease;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .status-switch button .d {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2);
+  }
+  .status-switch button:hover { color: var(--ink); }
+  .status-switch button[aria-pressed="true"] {
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 0 0 1px var(--rule);
+  }
+  .status-switch button[data-st="doing"][aria-pressed="true"] .d { background: var(--doing); }
+  .status-switch button[data-st="done"][aria-pressed="true"] .d { background: var(--done); }
+
+  .owner-line {
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+    font-family: "Geist Mono", monospace;
+    letter-spacing: 0.04em;
+  }
+  .owner-line b { color: var(--ink); font-weight: 500; }
+
+  /* ============ FOOTER ============ */
+  .footnote {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px;
+    font-size: 12.5px; color: var(--muted);
+  }
+  .footnote h4 {
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink); margin: 0 0 10px; font-weight: 500;
+  }
+  .footnote p { margin: 0; line-height: 1.55; max-width: 38ch; }
+  .footnote a { color: var(--pitch); text-decoration: none; border-bottom: 1px solid var(--rule-2); }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 980px) {
+    .wrap { padding: 32px 24px 64px; }
+    .hero { grid-template-columns: 1fr; gap: 24px; }
+    .dash { grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+    .reset-btn { grid-column: auto; justify-self: start; }
+    .stage { grid-template-columns: 1fr; gap: 20px; }
+    .stage .side { border-left: none; border-top: 1px solid var(--rule); padding: 18px 0 0; }
+    .flow { padding-left: 60px; }
+    .flow::before { left: 22px; }
+    .stage .num-bubble { left: -52px; width: 44px; height: 44px; font-size: 20px; top: 24px; }
+    .stage h3 { font-size: 30px; }
+    .acts { grid-template-columns: 1fr; }
+    .footnote { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body { background: white; }
+    .reset-btn, .status-switch { display: none; }
+    .stage { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <span>Maidan Play · Operations</span>
+    </div>
+    <div class="meta">
+      <span>SOP #02 · <b>Demo Student</b></span>
+      <span>Version <b>1.0</b></span>
+      <span>Owner · <b>Ops Lead</b></span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Bird's-eye operational flow</div>
+      <h1 class="hero-title">From a qualified lead<br/>to an <em>enrolled student.</em></h1>
+      <p class="hero-sub">
+        Ten stages. One direction. This is the surface map &mdash; what every member of the team needs to see on a single page to know where a demo stands, what's done, and what's next. Drill into each stage's detailed SOP for scripts, checklists, and SLAs.
+      </p>
+    </div>
+    <div class="hero-side">
+      <div class="label">How to use this page</div>
+      <p>Click a status pill on any stage to mark it <b>To do</b>, <b>In progress</b>, or <b>Done</b>. Your progress is saved on this device and the dashboard above updates live.</p>
+      <p>Use this as the wall poster, the standup checklist, and the onboarding map. Lead generation is a marketing SOP &mdash; it lives upstream of Stage 01.</p>
+    </div>
+  </header>
+
+  <!-- DASHBOARD -->
+  <section class="dash" aria-label="Progress dashboard">
+    <div class="progress-block">
+      <div class="progress-label">Overall completion</div>
+      <div class="pct"><span id="pct">0</span><small>%</small></div>
+      <div class="bar"><i id="bar"></i></div>
+    </div>
+    <div class="stat">
+      <div class="num done" id="ct-done">0</div>
+      <div class="lbl">Done</div>
+      <div class="sub">of 10 stages</div>
+    </div>
+    <div class="stat">
+      <div class="num doing" id="ct-doing">0</div>
+      <div class="lbl">In progress</div>
+      <div class="sub">active right now</div>
+    </div>
+    <div class="stat">
+      <div class="num todo" id="ct-todo">10</div>
+      <div class="lbl">To do</div>
+      <div class="sub">not yet started</div>
+    </div>
+    <button class="reset-btn" id="reset">Reset all</button>
+  </section>
+
+  <!-- FLOW SECTION HEAD -->
+  <div class="section-head">
+    <h2>The flow, <em>end to end.</em></h2>
+    <div class="legend" aria-label="Legend">
+      <span class="key"><span class="dot todo"></span> To do</span>
+      <span class="key"><span class="dot doing"></span> In progress</span>
+      <span class="key"><span class="dot done"></span> Done</span>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <ol class="flow" id="flow">
+
+    <li class="stage" data-status="todo" data-id="s1">
+      <span class="num-bubble">01</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 01</span><span class="sep">·</span><span>Intake</span></div>
+        <h3>Lead Qualification</h3>
+        <p class="desc">A demo lead arrives. Before anything else, we verify it's a real fit for our academy &mdash; age, location, batch availability &mdash; and we tag it with a clean status so nobody loses it.</p>
+        <ul class="acts">
+          <li>Verify lead quality</li>
+          <li>Check age &amp; cohort fit</li>
+          <li>Confirm location is serviceable</li>
+          <li>Check batch availability</li>
+          <li>Assign lead status</li>
+          <li>Route to the right rep</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">A qualified demo lead</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s1">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Sales rep</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s2">
+      <span class="num-bubble">02</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 02</span><span class="sep">·</span><span>Outreach</span></div>
+        <h3>Communication &amp; Confirmation</h3>
+        <p class="desc">A fast, warm first message that turns a form submission into a booked human. WhatsApp first, in our tone, with everything a parent needs to say yes.</p>
+        <ul class="acts">
+          <li>WhatsApp response within 1 hour</li>
+          <li>Send demo confirmation</li>
+          <li>Share venue, map &amp; time</li>
+          <li>Share dress code &amp; rain protocol</li>
+          <li>Trigger reminder system</li>
+          <li>Share coach &amp; academy intro</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">A confirmed demo booking</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s2">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Sales rep</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s3">
+      <span class="num-bubble">03</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 03</span><span class="sep">·</span><span>Scheduling</span></div>
+        <h3>Demo Slotting &amp; Scheduling</h3>
+        <p class="desc">The right child in the right batch, with the right coach, on a day that isn't overcrowded. This is where premium experience is made or broken.</p>
+        <ul class="acts">
+          <li>Assign suitable batch</li>
+          <li>Assign coach</li>
+          <li>Cap at 3–5 demos per session</li>
+          <li>Avoid overcrowding</li>
+          <li>Coordinate with ground &amp; ops</li>
+          <li>Confirm slot on calendar</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">Demo properly scheduled</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s3">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Ops coordinator</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s4">
+      <span class="num-bubble">04</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 04</span><span class="sep">·</span><span>Reminder</span></div>
+        <h3>Pre-Demo Follow-Up</h3>
+        <p class="desc">A booking isn't an attendance. The job here is to make Tuesday evening feel inevitable &mdash; a reminder, a photo of the ground, a short call.</p>
+        <ul class="acts">
+          <li>Reminder message — 1 day before</li>
+          <li>Send ground photo &amp; coach intro</li>
+          <li>Reminder call — 3–4 hours before</li>
+          <li>Confirm attendance</li>
+          <li>Build excitement</li>
+          <li>Capture any reschedule needs</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">High attendance probability</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s4">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Sales rep</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s5">
+      <span class="num-bubble">05</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 05</span><span class="sep">·</span><span>Readiness</span></div>
+        <h3>Coach Preparation</h3>
+        <p class="desc">The coach knows the demo children by name before they walk in. They know what to look for, who to welcome first, and how to talk to parents at the end.</p>
+        <ul class="acts">
+          <li>Coach briefed on demo students</li>
+          <li>Names &amp; ages memorised</li>
+          <li>Session plan locked</li>
+          <li>One "success moment" pre-planned</li>
+          <li>Parent handling notes reviewed</li>
+          <li>Materials &amp; bibs prepared</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">Coach ready for the session</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s5">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Head coach</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s6">
+      <span class="num-bubble">06</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 06</span><span class="sep">·</span><span>Hospitality</span></div>
+        <h3>On-Ground Demo Experience</h3>
+        <p class="desc">The minute they step in, everything is thought-through &mdash; a person greets them, a bib is ready, a place to sit is shown. No parent should stand confused.</p>
+        <ul class="acts">
+          <li>Welcome the family at gate</li>
+          <li>Mark attendance</li>
+          <li>Allocate bibs &amp; jersey</li>
+          <li>Parent relations staff assigned</li>
+          <li>Walk-through of facilities</li>
+          <li>Seating &amp; hospitality managed</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">A strong first impression</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s6">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Ground staff</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s7">
+      <span class="num-bubble">07</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 07</span><span class="sep">·</span><span>Session</span></div>
+        <h3>Demo Session Execution</h3>
+        <p class="desc">A session that's fun, social, and lightly technical. The child leaves wanting to come back on Saturday. We observe skill quietly &mdash; we don't audition them.</p>
+        <ul class="acts">
+          <li>Warm-up &amp; ice-breaker</li>
+          <li>Integrate demo students with team</li>
+          <li>Fun technical drill</li>
+          <li>Game-based activity &amp; small match</li>
+          <li>Observe skill level</li>
+          <li>Positive ending &amp; team huddle</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">A strong student experience</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s7">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Coach</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s8">
+      <span class="num-bubble">08</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 08</span><span class="sep">·</span><span>Trust</span></div>
+        <h3>Parent Interaction &amp; Feedback</h3>
+        <p class="desc">After the whistle, the coach &mdash; not a salesperson &mdash; talks to the parent. Strengths, areas to grow, what the next three months look like. Honest, not salesy.</p>
+        <ul class="acts">
+          <li>Coach shares strengths</li>
+          <li>Areas to improve</li>
+          <li>Recommended batch</li>
+          <li>3-month growth roadmap</li>
+          <li>Address parent concerns</li>
+          <li>Hand off to ops gracefully</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">Trust &amp; conversion readiness</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s8">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Coach</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s9">
+      <span class="num-bubble">09</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 09</span><span class="sep">·</span><span>Convert</span></div>
+        <h3>Conversion &amp; Follow-Up</h3>
+        <p class="desc">A same-day thank-you. A clear recommendation. Multi-day follow-ups that share testimonials and philosophy &mdash; never just price &mdash; until a decision is made.</p>
+        <ul class="acts">
+          <li>Same-day thank-you message</li>
+          <li>Session highlights &amp; feedback form</li>
+          <li>Batch recommendation</li>
+          <li>Fee discussion</li>
+          <li>Day 2–3 follow-up</li>
+          <li>Final decision captured</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">An enrollment decision</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s9">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Sales rep</b></div>
+      </aside>
+    </li>
+
+    <li class="stage" data-status="todo" data-id="s10">
+      <span class="num-bubble">10</span>
+      <div class="body">
+        <div class="meta-row"><span class="phase">Phase 10</span><span class="sep">·</span><span>Learn</span></div>
+        <h3>Tracking &amp; Optimization</h3>
+        <p class="desc">Every demo teaches us something. Numbers tell us what worked, parent feedback tells us why. The loop closes here and starts again, sharper.</p>
+        <ul class="acts">
+          <li>KPI tracking — Lead → Demo %</li>
+          <li>Demo → Paid %</li>
+          <li>No-show tracking</li>
+          <li>Coach-wise conversion</li>
+          <li>Parent satisfaction (NPS)</li>
+          <li>Weekly review &amp; iteration</li>
+        </ul>
+      </div>
+      <aside class="side">
+        <div class="output-box">
+          <div class="label">Output</div>
+          <div class="val">A continuous improvement system</div>
+        </div>
+        <div class="status-box">
+          <div class="label">Status</div>
+          <div class="status-switch" data-stage="s10">
+            <button data-st="todo" aria-pressed="true"><span class="d"></span>To do</button>
+            <button data-st="doing" aria-pressed="false"><span class="d"></span>In progress</button>
+            <button data-st="done" aria-pressed="false"><span class="d"></span>Done</button>
+          </div>
+        </div>
+        <div class="owner-line">Owner · <b>Ops lead</b></div>
+      </aside>
+    </li>
+
+  </ol>
+
+  <!-- FOOTNOTE -->
+  <footer class="footnote">
+    <div>
+      <h4>Upstream</h4>
+      <p>Lead generation lives in the marketing SOP. This page begins the moment a lead is qualified.</p>
+    </div>
+    <div>
+      <h4>Downstream</h4>
+      <p>Stage 10's insights feed every other stage's detailed SOP &mdash; messaging scripts, coach incentive structure, on-ground checklists.</p>
+    </div>
+    <div>
+      <h4>Status pipeline</h4>
+      <p>New · Contacted · Booked · Confirmed · Attended · Follow-up · Converted · Lost · No-show</p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  (function() {
+    const STORAGE_KEY = 'maidan-sop-status-v1';
+    const STAGES = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'];
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw) || {};
+      } catch (e) { return {}; }
+    }
+    function save(state) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+    }
+
+    let state = load();
+
+    function applyState() {
+      let done = 0, doing = 0, todo = 0;
+      STAGES.forEach(id => {
+        const st = state[id] || 'todo';
+        const stage = document.querySelector('.stage[data-id="'+id+'"]');
+        if (!stage) return;
+        stage.setAttribute('data-status', st);
+        const buttons = stage.querySelectorAll('.status-switch button');
+        buttons.forEach(b => {
+          b.setAttribute('aria-pressed', b.dataset.st === st ? 'true' : 'false');
+        });
+        if (st === 'done') done++;
+        else if (st === 'doing') doing++;
+        else todo++;
+      });
+      const pct = Math.round((done / STAGES.length) * 100);
+      document.getElementById('pct').textContent = pct;
+      document.getElementById('bar').style.width = pct + '%';
+      document.getElementById('ct-done').textContent = done;
+      document.getElementById('ct-doing').textContent = doing;
+      document.getElementById('ct-todo').textContent = todo;
+    }
+
+    document.querySelectorAll('.status-switch').forEach(sw => {
+      const stage = sw.dataset.stage;
+      sw.addEventListener('click', e => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        state[stage] = btn.dataset.st;
+        save(state);
+        applyState();
+      });
+    });
+
+    document.getElementById('reset').addEventListener('click', () => {
+      state = {};
+      save(state);
+      applyState();
+    });
+
+    applyState();
+  })();
+</script>
+</body>
+</html>
